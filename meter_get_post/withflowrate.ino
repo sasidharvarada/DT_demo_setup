@@ -22,7 +22,7 @@ HTTPClient http;
 #define OM2M_DATA_CONT "WM-Node-2/Data"
 String url = "http://dev-onem2m.iiit.ac.in:443/~/in-cse/in-name/AE-DT/WM-Node-2/Data/la";
 
-#define POST_INTERVAL 60000  // Interval for posting data (1 minute)
+#define POST_INTERVAL 300000    // Interval for posting data (5 minutes)
 
 unsigned long lastPostTime = 0;  // Variable to store the time of the last post
 
