@@ -1,5 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <WiFiUdp.h>
+#include <NTPClient.h>
 
 #define interruptPin D3  // Led in NodeMCU at pin GPIO16 (D3).
 
@@ -96,7 +98,7 @@ void sendGET(String url) {
   http.end();
 }
 
-void post_onem2m() {
+void post_onem2m(unsigned long epochTime) {
   float flowRate = calculateFlowRate(count);
 
   String server = (HTTPS ? "https://" : "http://") + String(CSE_IP) + ":" + String(CSE_PORT) + String(OM2M_MN);
@@ -104,7 +106,9 @@ void post_onem2m() {
   http.addHeader("X-M2M-Origin", OM2M_ORGIN);
   http.addHeader("Content-Type", "application/json;ty=4");
 
-  String data = "[" + String(count) + "," + String(flowRate) + "]"; // Include both count and flow rate in the data string
+  String data = "{\"timestamp\":" + String(epochTime) +
+                ",\"flowrate\":" + String(flowRate) +
+                ",\"totalflow\":" + String(count) + "}";
 
   String req_data = String() + "{\"m2m:cin\": {"
                     + "\"con\": \"" + data + "\","
@@ -136,7 +140,17 @@ void loop() {
 
   if (!countIncreased && currentTime - lastPostTime >= POST_INTERVAL) {  // Time to post data
     lastPostTime = currentTime;                                          // Update last post time
-    post_onem2m();                                                       // Post data to the server
+    
+    // Get current time from NTP server
+    WiFiUDP ntpUDP;
+    NTPClient timeClient(ntpUDP);
+    timeClient.begin();
+    timeClient.setTimeOffset(19800);  // Timezone offset for IST (Indian Standard Time)
+    timeClient.update();
+    unsigned long epochTime = timeClient.getEpochTime();  // Get epoch time in seconds
+    timeClient.end();
+
+    post_onem2m(epochTime);  // Post data to the server
   }
 
   if (countIncreased) {  // Only print when count has increased
