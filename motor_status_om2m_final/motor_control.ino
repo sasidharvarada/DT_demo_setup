@@ -7,8 +7,11 @@
 #include <WiFiUdp.h>
 #include <ESP32Time.h>
 
-#define MAIN_SSID "TP-Link_20D1"
-#define MAIN_PASS "79069571"
+// #define MAIN_SSID "TP-Link_20D1"
+// #define MAIN_PASS "79069571"
+
+#define MAIN_SSID "SCRC_LAB_IOT"
+#define MAIN_PASS "Scrciiith@123"
 
 #define CSE_IP "dev-onem2m.iiit.ac.in"
 #define OM2M_ORIGIN "Tue_20_12_22:Tue_20_12_22"
