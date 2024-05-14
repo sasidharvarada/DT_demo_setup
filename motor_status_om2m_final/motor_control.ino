@@ -146,7 +146,7 @@ void setup() {
 
   // Initialize relay pin
   pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, LOW); // Ensure relay is initially off
+  digitalWrite(RELAY_PIN, HIGH); // Ensure relay is initially off
 }
 
 void sendGET(String url) {
@@ -159,8 +159,8 @@ void sendGET(String url) {
 
   if (httpCode > 0) {
     payload = http.getString();
-    // Serial.println("---------------------------------Payload----------------------------------------------");
-    // Serial.println(payload);
+    Serial.println("---------------------------------Payload----------------------------------------------");
+    Serial.println(payload);
 
     // Find the "con" field within the payload
     int conStart = payload.indexOf("[");         // Find the start of the count value
@@ -174,16 +174,16 @@ void sendGET(String url) {
       // Set the extracted value as the count
       int relayValue = conValue.toInt();
       if (relayValue == 1) {
-        digitalWrite(RELAY_PIN, HIGH); // Turn on the relay
+        digitalWrite(RELAY_PIN, LOW); // Turn on the relay
       } else {
-        digitalWrite(RELAY_PIN, LOW); // Turn off the relay
+        digitalWrite(RELAY_PIN, HIGH); // Turn off the relay
       }
     }
   } else {
     Serial.print("HTTP request failed with error code: ");
     Serial.println(httpCode);
     // If GET request fails, restart ESP8266
-    Serial.println("Restarting ESP8266...");
+    Serial.println("Restarting ESP32 ...");
     ESP.restart();
   }
 
