@@ -16,7 +16,9 @@
 #define HTTPS false
 #define OM2M_MN "/~/in-cse/in-name/"
 #define OM2M_AE "AE-DT"
-#define OM2M_DATA_CONT "DM-KH98-60/Data"
+#define OM2M_DATA_CONT "WM-WD-KRB-M1/Data"
+
+String url = "http://dev-onem2m.iiit.ac.in:443/~/in-cse/in-name/AE-DT/WM-WD-KRB-M1/ACT/la";
 
 WiFiClient client;
 HTTPClient http;
