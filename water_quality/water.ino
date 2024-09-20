@@ -53,7 +53,6 @@ void post_onem2m() {
   
   String req_data = String() + "{\"m2m:cin\": {"
                     + "\"con\": \"" + data + "\","
-                    + "\"rn\": \"" + "cin_" + String(millis()) + "\","
                     + "\"cnf\": \"text\""
                     + "}}";
 
