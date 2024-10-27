@@ -1,0 +1,130 @@
+
+Loop 1: 300 to 293 (Light blue scrolling effect)
+Loop 2: 292 to 291 (Red glowing, just on, do not turn off)
+Loop 3: 290 to 271 (Blue scrolling effect)
+Loop 4: 270 to 270 (Red glowing, just on, do not turn off)
+Loop 5: 269 to 262 (Blue scrolling effect)
+Loop 6: 261 to 258 (No color)
+Loop 7: 257 to 249 (Blue scrolling effect)
+Loop 8: 248 to 248 (Red glowing, just on, do not turn off)
+Loop 9: 247 to 1 (Blue scrolling effect)
+
+here 
+
+the pattern should be 
+loop 1 always on  with scrolling function 
+if (=1) 
+{
+loop2 
+delay (3000)
+loop3( with scrolling function ) 
+if (=1){
+loop 4
+delay (3000) 
+loop 5 ( with scrolling function ) 
+loop 6 
+loop 7 ( with scrollling function ) 
+if (= 1 )
+{
+loop 8 
+delay ( 3000) 
+loop 9 
+}
+else {
+led 248 - 1  = black colour }
+}
+else {
+led 270 to 1 = black colur}
+}
+else {
+led 292 to 1 black colour }
+
+
+
+for this code 
+
+
+
+
+
+
+#include <FastLED.h>
+
+#define LED_PIN     27      // Pin connected to the Data line of WS2812B
+#define NUM_LEDS    300     // Total number of LEDs in the strip
+#define BRIGHTNESS  50      // Reduced maximum brightness of LEDs
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
+
+CRGB leds[NUM_LEDS];
+
+// Function declarations
+void waterFlowing(int startLED, int endLED, int scrollPosition);
+void valveOn(int startLED, int endLED);
+void runPattern();
+
+unsigned long valveTimer = 0;   // Timer to track how long the valve is on
+const unsigned long valveDelay = 2000; // 2-second delay for valve
+
+bool valveState = false;   // Track if the valve is currently on or off
+int scrollPosition = 0;    // Scrolling position for water flowing sections
+
+void setup() {
+  FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.setBrightness(BRIGHTNESS);
+}
+
+void loop() {
+  runPattern();
+}
+
+void runPattern() {
+  // 1. First water flow (300 to 293) - Continuous scrolling
+  waterFlowing(294, 300, scrollPosition);
+
+  // Check if 2 seconds have passed for the red valve to turn off and start the second flow
+  if (millis() - valveTimer >= valveDelay && valveState == false) {
+    // 2. Valve on (292 to 291) for 2 seconds
+    valveOn(291, 292);
+    valveState = true;
+    valveTimer = millis();  // Reset the timer to track the next event
+  }
+
+  // 3. Start the second water flow after the 2 seconds of valve being on
+  if (valveState == true && millis() - valveTimer >= valveDelay) {
+    waterFlowing(271, 290, scrollPosition);  // Second water flow (290 to 271)
+  }
+
+  // Show the LED updates
+  FastLED.show();
+
+  // Increment the scroll position for the next frame
+  scrollPosition++;
+  if (scrollPosition >= 20) {
+    scrollPosition = 0;  // Reset after one full loop
+  }
+
+  delay(100);  // Adjust the speed of the scrolling effect
+}
+
+// Function to handle water flowing section
+void waterFlowing(int startLED, int endLED, int scrollPosition) {
+  int range = endLED - startLED + 1;
+  int offPosition1 = scrollPosition % range;
+  int offPosition2 = (scrollPosition + 1) % range;
+
+  CRGB colorToUse = CRGB(35,137,118); // water color
+
+  for (int i = endLED; i >= startLED; i--) {
+    leds[i] = colorToUse; // Set the selected color
+  }
+  leds[endLED - offPosition1] = CRGB::Black;
+  leds[endLED - offPosition2] = CRGB::Black;
+}
+
+// Function to turn on valve LEDs (static red LEDs)
+void valveOn(int startLED, int endLED) {
+  for (int i = startLED; i <= endLED; i++) {
+    leds[i] = CRGB(200, 0, 0); // Custom dim red color
+  }
+}
